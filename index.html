@@ -68,7 +68,7 @@
 
         .toggle-password {
             position: absolute;
-            left: 12px; /* מיקום העין בצד שמאל בתיבה */
+            left: 12px; /* מיקום העין בצד שמאל בתוך התיבה */
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -77,13 +77,12 @@
             user-select: none;
         }
 
-        /* שורת הכפתורים למטה */
+        /* שורת הרכיבים התחתונה */
         .bottom-row {
             display: flex;
-            justify-content: space-between; /* מיישר אלמנט אחד לימין ואחד לשמאל */
+            justify-content: space-between; /* דוחף אחד לימין הקיצוני ואחד לשמאל הקיצוני */
             align-items: center;
             margin-top: 25px;
-            flex-direction: row-reverse; /* הופך את הצדדים של הרכיבים בפנים */
         }
 
         .remember-me {
@@ -121,9 +120,12 @@
 </head>
 <body>
 
-<div class="logo-container">
-    <img src="logo.png" alt="אור מנחם">
-</div>
+    <!-- אזור הלוגו -->
+    <div class="logo-container">
+        <img src="logo.png" alt="אור מנחם">
+    </div>
+
+    <!-- תיבת ההתחברות המאובטחת -->
     <div class="login-box">
         <form action="https://or-menachem.ru/wp-login.php" method="post">
             
@@ -141,14 +143,17 @@
             </div>
 
             <div class="bottom-row">
+                <!-- כפתור ההתחברות - ממוקם ראשון (מימין/משמאל בהתאם ל-RTL) -->
+                <button type="submit" class="btn-submit">התחבר</button>
+
+                <!-- הטקסט "זכור אותי" והצ'קבוקס - ממוקם שני בצד הנגדי -->
                 <label class="remember-me">
                     <input type="checkbox" name="rememberme" value="forever">
                     <span>זכור אותי</span>
                 </label>
-
-                <button type="submit" class="btn-submit">התחבר</button>
             </div>
 
+            <!-- הפניה אוטומטית לווידאו לאחר התחברות תקינה -->
             <input type="hidden" name="redirect_to" value="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4">
         </form>
     </div>
