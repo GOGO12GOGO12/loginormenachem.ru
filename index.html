@@ -77,10 +77,10 @@
             user-select: none;
         }
 
-        /* שורת הרכיבים התחתונה */
+        /* שורת הרכיבים התחתונה המעודכנת */
         .bottom-row {
             display: flex;
-            justify-content: space-between; /* דוחף אחד לימין הקיצוני ואחד לשמאל הקיצוני */
+            justify-content: space-between; /* דוחף אחד לימין ואחד לשמאל */
             align-items: center;
             margin-top: 25px;
         }
@@ -93,6 +93,7 @@
             font-weight: bold;
             color: #222;
             cursor: pointer;
+            order: 1; /* קובע שהאלמנט הזה יהיה ראשון (בצד ימין ב-RTL) */
         }
 
         .remember-me input {
@@ -111,6 +112,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.2s;
+            order: 2; /* קובע שהאלמנט הזה יהיה שני (בצד שמאל ב-RTL) */
         }
 
         .btn-submit:hover {
@@ -120,12 +122,10 @@
 </head>
 <body>
 
-    <!-- אזור הלוגו -->
     <div class="logo-container">
         <img src="logo.png" alt="אור מנחם">
     </div>
 
-    <!-- תיבת ההתחברות המאובטחת -->
     <div class="login-box">
         <form action="https://or-menachem.ru/wp-login.php" method="post">
             
@@ -143,17 +143,14 @@
             </div>
 
             <div class="bottom-row">
-                <!-- כפתור ההתחברות - ממוקם ראשון (מימין/משמאל בהתאם ל-RTL) -->
-                <button type="submit" class="btn-submit">התחבר</button>
-
-                <!-- הטקסט "זכור אותי" והצ'קבוקס - ממוקם שני בצד הנגדי -->
                 <label class="remember-me">
                     <input type="checkbox" name="rememberme" value="forever">
                     <span>זכור אותי</span>
                 </label>
+
+                <button type="submit" class="btn-submit">התחבר</button>
             </div>
 
-            <!-- הפניה אוטומטית לווידאו לאחר התחברות תקינה -->
             <input type="hidden" name="redirect_to" value="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4">
         </form>
     </div>
