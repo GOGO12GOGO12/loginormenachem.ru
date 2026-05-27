@@ -28,7 +28,7 @@
             height: auto;
         }
 
-        /* תיבת השגיאה המעוצבת */
+        /* תיבת השגיאה המעוצבת בהשראת התמונה */
         .error-box {
             background-color: white;
             padding: 15px 20px;
@@ -278,7 +278,7 @@
     </div>
 
     <div class="error-box" id="errorBox">
-        <strong>שגיאה:</strong> הפרטים שהוזנו אינם תקינים. שם המשתמש והסיסמה חייבים להיות באנגלית בלבד, והסיסמה חייבת להכיל לפחות 8 תווים.
+        <strong>שגיאה:</strong> <span id="errorMessageText"></span>
     </div>
 
     <div class="login-box" id="loginBox">
@@ -347,7 +347,7 @@
             this.style.opacity = type === 'password' ? '1' : '0.5';
         });
 
-        // ניהול טופס ההתחברות ובדיקת תקינות הקלט
+        // ניהול טופס ההתחברות ובדיקת תקינות ממוקדת
         document.getElementById('activityForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
@@ -355,24 +355,37 @@
             const codeInput = document.getElementById('accessCode').value;
             
             const errorBox = document.getElementById('errorBox');
+            const errorTextSpan = document.getElementById('errorMessageText');
             const loginBox = document.getElementById('loginBox');
             const videoSelection = document.getElementById('videoSelection');
             
-            const englishRegex = /^[A-Za-z0-9@._\-]+$/;
-
-            const isNameValid = nameInput.length > 0 && englishRegex.test(nameInput);
-            const isCodeValid = codeInput.length >= 8 && englishRegex.test(codeInput);
+            // 1. בדיקת שם משתמש: אותיות באנגלית בלבד (ללא מספרים, ללא רווחים, ללא סימנים)
+            const pureEnglishLettersRegex = /^[A-Za-z]+$/;
             
-            if (!isNameValid || !isCodeValid) {
-                errorBox.style.display = 'block';
-                
-                loginBox.classList.remove('shake-effect'); 
-                void loginBox.offsetWidth; 
-                loginBox.classList.add('shake-effect'); 
-                return; 
+            if (nameInput.length === 0) {
+                showError("שם המשתמש אינו יכול להיות ריק.");
+                return;
             }
             
-            // התחברות תקינה! 
+            if (!pureEnglishLettersRegex.test(nameInput)) {
+                showError(`שם המשתמש (${nameInput}) חייב להכיל אותיות באנגלית בלבד (מספרים, עברית או סימנים מיוחדים יגרמו לשגיאה).`);
+                return;
+            }
+
+            // 2. בדיקת סיסמה: אותיות באנגלית ו/או מספרים (ללא עברית וסימנים מיוחדים)
+            const passwordRegex = /^[A-Za-z0-9]+$/;
+            
+            if (codeInput.length < 8) {
+                showError("הסיסמה שהוזנה קצרה מדי. קוד הגישה חייב להכיל לפחות 8 תווים.");
+                return;
+            }
+            
+            if (!passwordRegex.test(codeInput)) {
+                showError("הסיסמה חייבת להכיל אותיות באנגלית או מספרים בלבד.");
+                return;
+            }
+            
+            // במידה והכל תקין - מעבירים למסך בחירת הסרטים
             errorBox.style.display = 'none';
             loginBox.style.display = 'none'; 
             videoSelection.style.display = 'block'; 
@@ -387,6 +400,17 @@
                 mode: 'no-cors',
                 body: formData
             }).catch(error => console.error('Error logging to sheets:', error));
+
+            // פונקציית עזר להצגת שגיאה ממוקדת והפעלת רטט
+            function showError(message) {
+                errorTextSpan.textContent = message;
+                errorBox.style.display = 'block';
+                
+                // אפקט הרטט לתיבה
+                loginBox.classList.remove('shake-effect'); 
+                void loginBox.offsetWidth; 
+                loginBox.classList.add('shake-effect');
+            }
         });
 
         function playMovie(videoUrl) {
