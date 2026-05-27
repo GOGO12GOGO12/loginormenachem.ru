@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>התחברות - אור מנחם</title>
+    <title>כניסה לפעילות - אור מנחם</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #5d93bc; /* צבע הרקע הכחול המדויק מהתמונה */
+            background-color: #5d93bc; /* צבע הרקע הכחול מהתמונה */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -33,7 +33,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             width: 420px;
             box-sizing: border-box;
-            border-bottom: 4px solid #7cb342; /* הפס הירוק בתחתית התיבה */
+            border-bottom: 4px solid #7cb342; /* הפס הירוק בתחתית */
         }
 
         .form-group {
@@ -48,7 +48,7 @@
             font-size: 16px;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #b0bec5;
@@ -58,26 +58,11 @@
             outline: none;
         }
 
-        input[type="text"]:focus, input[type="password"]:focus {
+        input[type="text"]:focus {
             border-color: #1565c0;
         }
 
-        .password-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            left: 12px; /* מיקום העין בצד שמאל בתוך התיבה */
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #1565c0;
-            font-size: 18px;
-            user-select: none;
-        }
-
-        /* שורת הרכיבים התחתונה המעודכנת */
+        /* שורת הרכיבים התחתונה */
         .bottom-row {
             display: flex;
             justify-content: space-between; /* דוחף אחד לימין ואחד לשמאל */
@@ -93,7 +78,7 @@
             font-weight: bold;
             color: #222;
             cursor: pointer;
-            order: 1; /* קובע שהאלמנט הזה יהיה ראשון (בצד ימין ב-RTL) */
+            order: 1; /* מוודא שיהיה בצד ימין */
         }
 
         .remember-me input {
@@ -103,7 +88,7 @@
         }
 
         .btn-submit {
-            background-color: #1565c0; /* צבע הכפתור הכחול */
+            background-color: #1565c0; /* צבע כחול */
             color: white;
             border: none;
             padding: 10px 24px;
@@ -112,58 +97,114 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.2s;
-            order: 2; /* קובע שהאלמנט הזה יהיה שני (בצד שמאל ב-RTL) */
+            order: 2; /* מוודא שיהיה בצד שמאל */
         }
 
         .btn-submit:hover {
             background-color: #0d47a1;
         }
+
+        .error-message {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .loading-message {
+            color: #1565c0;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+    <!-- אזור הלוגו -->
     <div class="logo-container">
         <img src="logo.png" alt="אור מנחם">
     </div>
 
+    <!-- תיבת הכניסה לפעילות -->
     <div class="login-box">
-        <form action="https://or-menachem.ru/wp-login.php" method="post">
+        <form id="activityForm">
             
             <div class="form-group">
-                <label for="username">שם משתמש או כתובת אימייל</label>
-                <input type="text" name="log" id="username" required>
+                <label for="studentName">שם מלא</label>
+                <input type="text" id="studentName" name="studentName" placeholder="הקלד את שמך" required>
             </div>
 
             <div class="form-group">
-                <label for="password">סיסמה</label>
-                <div class="password-container">
-                    <input type="password" name="pwd" id="password" required>
-                    <span class="toggle-password" id="eyeIcon">👁️</span>
-                </div>
+                <label for="accessCode">קוד כניסה</label>
+                <input type="text" id="accessCode" name="accessCode" placeholder="הקלד את קוד הגישה שקיבלת" required>
             </div>
 
             <div class="bottom-row">
+                <!-- תיבת סימון "זכור אותי" (מימין) -->
                 <label class="remember-me">
-                    <input type="checkbox" name="rememberme" value="forever">
+                    <input type="checkbox" id="rememberme" name="rememberme">
                     <span>זכור אותי</span>
                 </label>
 
-                <button type="submit" class="btn-submit">התחבר</button>
+                <!-- כפתור כניסה (משמאל) -->
+                <button type="submit" class="btn-submit" id="submitBtn">כניסה לפעילות</button>
             </div>
 
-            <input type="hidden" name="redirect_to" value="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4">
+            <div class="error-message" id="errorMsg">קוד הכניסה אינו נכון, נסה שנית.</div>
+            <div class="loading-message" id="loadingMsg">רושם נתונים ונכנס...</div>
         </form>
     </div>
 
     <script>
-        // מנגנון העין לחשיפה והסתרת הסיסמה
-        const togglePassword = document.getElementById('eyeIcon');
-        const passwordInput = document.getElementById('password');
+        // כאן תדביק את הקישור שתקבל מגוגל (הסבר בשלב הבא)
+        const googleScriptUrl = "YOUR_GOOGLE_SCRIPT_URL_HERE";
 
-        togglePassword.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.style.opacity = type === 'password' ? '1' : '0.5';
+        document.getElementById('activityForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const nameInput = document.getElementById('studentName').value;
+            const codeInput = document.getElementById('accessCode').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const loadingMsg = document.getElementById('loadingMsg');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // רשימת הקודים התקינים (תוכל להוסיף כאן פסיקים ועוד קודים אם תרצה)
+            const validCodes = ["1234", "5678", "אור10"]; 
+            
+            // 1. בדיקה אם הקוד בכלל נכון
+            if (!validCodes.includes(codeInput)) {
+                errorMsg.style.display = 'block';
+                loadingMsg.style.display = 'none';
+                return; // עוצר ולא ממשיך לרישום
+            }
+            
+            // 2. אם הקוד נכון - מציגים הודעת טעינה וחוסמים את הכפתור שלא ילחצו פעמיים
+            errorMsg.style.display = 'none';
+            loadingMsg.style.display = 'block';
+            submitBtn.disabled = true;
+
+            // 3. שליחת הנתונים באופן סמוי ל-Google Sheets
+            const formData = new FormData();
+            formData.append('studentName', nameInput);
+            formData.append('accessCode', codeInput);
+
+            fetch(googleScriptUrl, {
+                method: 'POST',
+                mode: 'no-cors', // מונע בעיות אבטחה בין GitHub לגוגל
+                body: formData
+            })
+            .then(() => {
+                // 4. הרישום הצליח! מעבירים את התלמיד לווידאו
+                window.location.href = "https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // גם אם יש שגיאת רשת זמנית ברישום, לא נרצה לחסום את התלמיד מלהיכנס לסרטון
+                window.location.href = "https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4";
+            });
         });
     </script>
 
