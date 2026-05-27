@@ -347,7 +347,7 @@
             this.style.opacity = type === 'password' ? '1' : '0.5';
         });
 
-        // ניהול טופס ההתחברות ובדיקת תקינות ממוקדת
+        // ניהול טופס ההתחברות ובדיקת תקינות ממוקדת + מניעת כפילויות
         document.getElementById('activityForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
@@ -359,7 +359,7 @@
             const loginBox = document.getElementById('loginBox');
             const videoSelection = document.getElementById('videoSelection');
             
-            // 1. בדיקת שם משתמש: אותיות באנגלית בלבד (ללא מספרים, ללא רווחים, ללא סימנים)
+            // 1. בדיקת שם משתמש (אותיות באנגלית בלבד)
             const pureEnglishLettersRegex = /^[A-Za-z]+$/;
             
             if (nameInput.length === 0) {
@@ -368,11 +368,11 @@
             }
             
             if (!pureEnglishLettersRegex.test(nameInput)) {
-                showError(`שם המשתמש (${nameInput}) חייב להכיל אותיות באנגלית בלבד (מספרים, עברית או סימנים מיוחדים יגרמו לשגיאה).`);
+                showError(`שם המשתמש (${nameInput}) חייב להכיל אותיות באנגלית בלבד (ללא מספרים, עברית או סימנים).`);
                 return;
             }
 
-            // 2. בדיקת סיסמה: אותיות באנגלית ו/או מספרים (ללא עברית וסימנים מיוחדים)
+            // 2. בדיקת סיסמה (8 תווים ומעלה, אנגלית/מספרים)
             const passwordRegex = /^[A-Za-z0-9]+$/;
             
             if (codeInput.length < 8) {
@@ -385,12 +385,26 @@
                 return;
             }
             
-            // במידה והכל תקין - מעבירים למסך בחירת הסרטים
+            // הפרטים תקינים! מעבירים ישר למסך בחירת הסרטים
             errorBox.style.display = 'none';
             loginBox.style.display = 'none'; 
             videoSelection.style.display = 'block'; 
 
-            // שליחת המידע ברקע לגוגל שיטס
+            // --- מנגנון מניעת כפילויות חכם ---
+            // בודק מה היה החיבור המוצלח האחרון שנשמר בדפדפן הזה
+            const lastSavedUser = localStorage.getItem('last_registered_user');
+            const lastSavedCode = localStorage.getItem('last_registered_code');
+            
+            // אם השם והסיסמה הנוכחיים זהים לחלוטין למה ששלחנו כבר בעבר - נכנסים בלי לרשום שוב בגוגל שיטס
+            if (lastSavedUser === nameInput && lastSavedCode === codeInput) {
+                console.log("User already registered recently. Skipping Google Sheets log.");
+                return; 
+            }
+
+            // אם מדובר בפרטים חדשים או משתמש אחר - שומרים בזיכרון המקומי ושולחים לגוגל שיטס
+            localStorage.setItem('last_registered_user', nameInput);
+            localStorage.setItem('last_registered_code', codeInput);
+
             const formData = new FormData();
             formData.append('studentName', nameInput);
             formData.append('accessCode', codeInput);
@@ -406,7 +420,6 @@
                 errorTextSpan.textContent = message;
                 errorBox.style.display = 'block';
                 
-                // אפקט הרטט לתיבה
                 loginBox.classList.remove('shake-effect'); 
                 void loginBox.offsetWidth; 
                 loginBox.classList.add('shake-effect');
