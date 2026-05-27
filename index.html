@@ -154,6 +154,11 @@
             background-color: #0d47a1;
         }
 
+        .btn-submit:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         /* --- אזור בחירת הסרטים --- */
         .video-selection-container {
             display: none;
@@ -301,7 +306,7 @@
                     <input type="checkbox" id="rememberme">
                     <span>זכור אותי</span>
                 </label>
-                <button type="submit" class="btn-submit">התחבר</button>
+                <button type="submit" class="btn-submit" id="submitBtn">התחבר</button>
             </div>
         </form>
     </div>
@@ -347,15 +352,38 @@
             this.style.opacity = type === 'password' ? '1' : '0.5';
         });
 
-        // ניהול טופס ההתחברות ובדיקת תקינות ממוקדת + מניעת כפילויות
+        // פונקציה חיצונית להצגת שגיאות ורטט
+        function showError(message) {
+            const errorBox = document.getElementById('errorBox');
+            const errorTextSpan = document.getElementById('errorMessageText');
+            const loginBox = document.getElementById('loginBox');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // מחזיר את הכפתור למצב פעיל למקרה שננעל
+            submitBtn.disabled = false;
+            submitBtn.textContent = "התחבר";
+
+            errorTextSpan.textContent = message;
+            errorBox.style.display = 'block';
+            
+            loginBox.classList.remove('shake-effect'); 
+            void loginBox.offsetWidth; 
+            loginBox.classList.add('shake-effect');
+        }
+
+        // ניהול טופס ההתחברות
         document.getElementById('activityForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             
             const nameInput = document.getElementById('studentName').value.trim();
             const codeInput = document.getElementById('accessCode').value;
+            const submitBtn = document.getElementById('submitBtn');
             
+            // נועל את הכפתור מיד כדי למנוע לחיצות כפולות מהירות ברצף
+            submitBtn.disabled = true;
+            submitBtn.textContent = "מתחבר...";
+
             const errorBox = document.getElementById('errorBox');
-            const errorTextSpan = document.getElementById('errorMessageText');
             const loginBox = document.getElementById('loginBox');
             const videoSelection = document.getElementById('videoSelection');
             
@@ -385,26 +413,28 @@
                 return;
             }
             
-            // הפרטים תקינים! מעבירים ישר למסך בחירת הסרטים
+            // --- מנגנון מניעת כפילויות הרמטי ---
+            const lastSavedUser = localStorage.getItem('last_registered_user');
+            const lastSavedCode = localStorage.getItem('last_registered_code');
+            
+            if (lastSavedUser === nameInput && lastSavedCode === codeInput) {
+                // המשתמש כבר נרשם לאחרונה - מעבירים אותו ישר בלי לשלוח שוב לשיטס
+                errorBox.style.display = 'none';
+                loginBox.style.display = 'none'; 
+                videoSelection.style.display = 'block';
+                return; 
+            }
+
+            // אם זה חיבור חדש - מעדכנים את הזיכרון
+            localStorage.setItem('last_registered_user', nameInput);
+            localStorage.setItem('last_registered_code', codeInput);
+
+            // מעבירים למסך הבחירה
             errorBox.style.display = 'none';
             loginBox.style.display = 'none'; 
             videoSelection.style.display = 'block'; 
 
-            // --- מנגנון מניעת כפילויות חכם ---
-            // בודק מה היה החיבור המוצלח האחרון שנשמר בדפדפן הזה
-            const lastSavedUser = localStorage.getItem('last_registered_user');
-            const lastSavedCode = localStorage.getItem('last_registered_code');
-            
-            // אם השם והסיסמה הנוכחיים זהים לחלוטין למה ששלחנו כבר בעבר - נכנסים בלי לרשום שוב בגוגל שיטס
-            if (lastSavedUser === nameInput && lastSavedCode === codeInput) {
-                console.log("User already registered recently. Skipping Google Sheets log.");
-                return; 
-            }
-
-            // אם מדובר בפרטים חדשים או משתמש אחר - שומרים בזיכרון המקומי ושולחים לגוגל שיטס
-            localStorage.setItem('last_registered_user', nameInput);
-            localStorage.setItem('last_registered_code', codeInput);
-
+            // שליחת המידע ברקע לגוגל שיטס
             const formData = new FormData();
             formData.append('studentName', nameInput);
             formData.append('accessCode', codeInput);
@@ -414,16 +444,6 @@
                 mode: 'no-cors',
                 body: formData
             }).catch(error => console.error('Error logging to sheets:', error));
-
-            // פונקציית עזר להצגת שגיאה ממוקדת והפעלת רטט
-            function showError(message) {
-                errorTextSpan.textContent = message;
-                errorBox.style.display = 'block';
-                
-                loginBox.classList.remove('shake-effect'); 
-                void loginBox.offsetWidth; 
-                loginBox.classList.add('shake-effect');
-            }
         });
 
         function playMovie(videoUrl) {
