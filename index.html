@@ -273,28 +273,25 @@
 </head>
 <body>
 
-    <!-- אזור הלוגו -->
     <div class="logo-container">
         <img src="logo.png" alt="אור מנחם">
     </div>
 
-    <!-- תיבת שגיאה דינמית -->
     <div class="error-box" id="errorBox">
         <strong>שגיאה:</strong> הפרטים שהוזנו אינם תקינים. שם המשתמש והסיסמה חייבים להיות באנגלית בלבד, והסיסמה חייבת להכיל לפחות 8 תווים.
     </div>
 
-    <!-- שלב 1: תיבת ההתחברות -->
     <div class="login-box" id="loginBox">
         <form id="activityForm">
             <div class="form-group">
                 <label for="studentName">שם משתמש או כתובת אימייל</label>
-                <input type="text" id="studentName" required autocomplete="off">
+                <input type="text" id="studentName" name="username" required autocomplete="username">
             </div>
 
             <div class="form-group">
                 <label for="accessCode">סיסמה</label>
                 <div class="password-container">
-                    <input type="password" id="accessCode" required>
+                    <input type="password" id="accessCode" name="password" required autocomplete="current-password">
                     <span class="toggle-password" id="eyeIcon">👁️</span>
                 </div>
             </div>
@@ -309,12 +306,10 @@
         </form>
     </div>
 
-    <!-- שלב 2: מסך בחירת הסרטים -->
     <div class="video-selection-container" id="videoSelection">
         <div class="selection-title">בחר סרטון לצפייה:</div>
         
         <div class="movies-grid" id="moviesGrid">
-            <!-- סרטון 1 (צד ימין) -->
             <div class="movie-card" onclick="playMovie('https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4')">
                 <div class="movie-preview-wrapper">
                     <video src="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4#t=0.1" preload="metadata" muted></video>
@@ -323,7 +318,6 @@
                 <div class="movie-title">סרטון פעילות 1</div>
             </div>
 
-            <!-- סרטון 2 (צד שמאל) -->
             <div class="movie-card" onclick="playMovie('https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4')">
                 <div class="movie-preview-wrapper">
                     <video src="https://ormenachem.net/wp-content/uploads/2024/05/WhatsApp-Video-2024-05-24-at-17.50.50.mp4#t=0.1" preload="metadata" muted></video>
@@ -333,7 +327,6 @@
             </div>
         </div>
 
-        <!-- נגן וידאו מובנה -->
         <div class="player-view" id="playerView">
             <button class="btn-back" onclick="backToSelection()">חזרה לבחירת סרטים ↩</button>
             <video id="mainPlayer" controls autoplay></video>
@@ -365,19 +358,14 @@
             const loginBox = document.getElementById('loginBox');
             const videoSelection = document.getElementById('videoSelection');
             
-            // ביטוי רגולרי (Regex) הבודק שיש רק אותיות באנגלית, מספרים ותווים נפוצים של אימייל (ללא עברית)
             const englishRegex = /^[A-Za-z0-9@._\-]+$/;
 
-            // עדכון חוקי הבדיקה:
-            // שם המשתמש: חייב להיות באנגלית (לא משנה האורך, כל עוד הוא לא ריק)
             const isNameValid = nameInput.length > 0 && englishRegex.test(nameInput);
-            // הסיסמה: חייבת להיות באנגלית וגם 8 תווים ומעלה
             const isCodeValid = codeInput.length >= 8 && englishRegex.test(codeInput);
             
             if (!isNameValid || !isCodeValid) {
                 errorBox.style.display = 'block';
                 
-                // אפקט הרטט לתיבה
                 loginBox.classList.remove('shake-effect'); 
                 void loginBox.offsetWidth; 
                 loginBox.classList.add('shake-effect'); 
