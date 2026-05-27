@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות - אור מנחם</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #5d93bc; /* הכחול המדויק מהרקע */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+        }
+
+        .logo-container img {
+            max-width: 280px;
+            height: auto;
+        }
+
+        .login-box {
+            background-color: white;
+            padding: 35px 30px;
+            border-radius: 2px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            width: 420px;
+            box-sizing: border-box;
+            border-right: 4px solid #7cb342; /* הפס הירוק בצד ימין כמקובל בעיצוב RTL */
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+            font-size: 16px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #b0bec5;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #1565c0;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            left: 12px; /* בצד שמאל עבור שפות מימין לשמאל */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #1565c0;
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #222;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-submit {
+            background-color: #1565c0; /* הכחול של כפתור התחבר */
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo-container">
+        <img src="https://or-menachem.ru/wp-content/uploads/2026/05/logo.png" alt="אור מנחם">
+    </div>
+
+    <div class="login-box">
+        <form action="https://or-menachem.ru/wp-login.php" method="post">
+            
+            <div class="form-group">
+                <label for="username">שם משתמש או כתובת אימייל</label>
+                <input type="text" name="log" id="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">סיסמה</label>
+                <div class="password-container">
+                    <input type="password" name="pwd" id="password" required>
+                    <span class="toggle-password" id="eyeIcon">👁️</span>
+                </div>
+            </div>
+
+            <div class="bottom-row">
+                <button type="submit" class="btn-submit">התחבר</button>
+
+                <label class="remember-me">
+                    <input type="checkbox" name="rememberme" value="forever">
+                    <span>זכור אותי</span>
+                </label>
+            </div>
+
+            <input type="hidden" name="redirect_to" value="https://or-menachem.ru/wp-content/uploads/2026/05/VIDEO-2025-09-17-23-10-38.mp4">
+        </form>
+    </div>
+
+    <script>
+        // מנגנון חשיפה והסתרה של הסיסמה בלחיצה על העין
+        const togglePassword = document.getElementById('eyeIcon');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            // החלפת סוג הקלט בין סיסמה לטקסט רגיל
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // שינוי קל של מראה העין כדי לסמן מצב גלוי/נסתר
+            this.style.opacity = type === 'password' ? '1' : '0.5';
+        });
+    </script>
+
+</body>
+</html>
